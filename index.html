@@ -92,6 +92,9 @@ header{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--
 
 .selbox{background:#0f172a;color:#fff;border-radius:14px;padding:12px;text-align:center;margin-bottom:10px}
 .selbox .n{font-size:30px;font-weight:800;word-break:break-word;direction:ltr}
+.selbox .qty-input,.cost-input{box-sizing:border-box;width:100%;border:2px solid rgba(255,255,255,.22);border-radius:12px;background:#fff;color:#111827;padding:10px 12px;font-size:24px;font-weight:800;text-align:center;direction:ltr;outline:none}
+.selbox .qty-input:focus,.cost-input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.18)}
+.cost-input{width:150px;max-width:42vw;font-size:15px;padding:7px 8px;border:1px solid var(--line);background:#fff}
 .selbox .l{font-size:11px;opacity:.75}
 .totrow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
 .totbig{font-size:22px;font-weight:800;color:var(--brand)}
@@ -123,22 +126,9 @@ header{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--
 #side{display:none}
 body.editing #side{display:block}
 @media(max-width:979px){
-  /* در موبایل پنل مقدار نباید روی صفحه بازدید شناور شود و آن را بپوشاند.
-     پنل به‌صورت عادی بعد از محتوای بازدید نمایش داده می‌شود تا فرم بازدید
-     و فهرست اقلام همیشه قابل مشاهده و ویرایش باشند. */
-  body.editing #side{position:static;z-index:auto;max-height:none;overflow:visible;
-    background:transparent;box-shadow:none;padding:0;margin-top:0;border-radius:0}
-  body.editing #pane-editor{padding-bottom:12px}
-  body.editing #side .card{border-radius:16px}
-  .mobile-qty{display:flex!important}
+  body.editing #side{position:fixed;left:0;right:0;bottom:0;z-index:40;max-height:78vh;overflow:auto;
+    background:var(--bg);box-shadow:0 -8px 30px rgba(0,0,0,.18);padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);border-radius:18px 18px 0 0}
 }
-.mobile-qty{display:none;align-items:center;gap:6px;margin-inline-start:8px}
-.mobile-qty input{width:82px;min-width:82px;height:42px;padding:7px 8px;border:2px solid var(--brand);
-  border-radius:11px;background:#fff;color:var(--ink);font-size:16px;font-weight:800;text-align:center;direction:ltr;
-  outline:none}
-.mobile-qty input:focus{box-shadow:0 0 0 3px var(--brand-l)}
-.mobile-qty small{font-size:10px;color:var(--muted);white-space:nowrap}
-@media(min-width:980px){.mobile-qty{display:none!important}}
 .hint{font-size:11px;color:var(--muted);text-align:center;margin-top:6px}
 kbd{background:#eef2f7;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:11px}
 
@@ -204,7 +194,6 @@ a.btn{text-decoration:none}
         </div>
         <div class="card">
           <h3>🧾 اقلام و مقادیر</h3>
-          <div class="guide" style="margin:0 0 10px">در گوشی می‌توانید <b>مقدار را مستقیماً داخل کادر مقدار هر قلم</b> وارد و ویرایش کنید. ماشین‌حساب پایین صفحه نیز برای ورود سریع در دسترس است.</div>
           <div class="toolbar"><input id="srch-ed" placeholder="🔍 جستجوی قلم..." oninput="renderEditorList()"></div>
           <div id="ed-list"></div>
         </div>
@@ -286,7 +275,7 @@ a.btn{text-decoration:none}
       <div class="card">
         <div class="selbox">
           <div class="l" id="sel-name">قلمی انتخاب نشده</div>
-          <div class="n" id="sel-val">۰</div>
+          <input id="sel-val-input" class="qty-input" type="text" inputmode="decimal" autocomplete="off" placeholder="مقدار" aria-label="مقدار" oninput="directQtyInput(this.value)" onclick="event.stopPropagation()">
           <div class="l" id="sel-unit"></div>
         </div>
         <div class="keypad">
@@ -539,18 +528,11 @@ function renderEditorList(){
         <div class="inum">${faDigits(it.id)}</div>
         <div class="ititle"><b>${it.name}</b><span>${it.unit||'—'}</span></div>
         <div class="iprice"><b>${groupNum(qty)}</b><span>مقدار</span></div>
-        <div class="mobile-qty" onclick="event.stopPropagation()">
-          <small>مقدار</small>
-          <input type="text" inputmode="decimal" autocomplete="off" aria-label="مقدار ${it.name}"
-            value="${qty || ''}" placeholder="۰"
-            onfocus="selectItem(${it.id})"
-            oninput="setQtyDirect(${it.id}, this.value)"
-            onclick="event.stopPropagation()">
-        </div>
       </div>
       <div class="ifoot">
-        <span>هزینه واحد: <b class="mono" style="color:var(--ink)">${groupNum(it.unitCost)}</b>
-          ${isPct(it.unit)?'':`<button class="btn ghost sm" onclick="event.stopPropagation();editUnitCost(${it.id})">✎</button>`}</span>
+        <span style="display:flex;align-items:center;gap:6px">هزینه واحد:
+          ${isPct(it.unit)?`<b class="mono" style="color:var(--ink)">${groupNum(it.unitCost)}</b>`:`<input class="cost-input" type="text" inputmode="decimal" autocomplete="off" value="${it.unitCost||0}" aria-label="هزینه واحد" onclick="event.stopPropagation()" oninput="directCostInput(${it.id},this.value)">`}
+        </span>
         <span>مجموع: <b class="mono" style="color:var(--green)">${groupNum(cost)}</b></span>
       </div>
     </div>`;
@@ -563,23 +545,29 @@ function selectItem(id){
 }
 function fmtInput(q){ q=num(q); return q%1===0?String(q):String(q); }
 
-// ورود مستقیم مقدار در موبایل؛ کاربر لازم نیست حتماً از ماشین‌حساب پایین صفحه استفاده کند.
-function setQtyDirect(id, value){
+function cleanNumericInput(v){
+  return String(v==null?'':v)
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/٫/g,'.').replace(/,/g,'').replace(/٬/g,'')
+    .replace(/[^0-9.\-]/g,'');
+}
+function directQtyInput(value){
+  if(currentId===null){ toast('ابتدا یک قلم را انتخاب کنید'); return; }
+  buffer=cleanNumericInput(value);
+  const v=getEditing(); if(!v)return;
+  const idx=v.items.findIndex(x=>x.id===currentId); if(idx<0)return;
+  v.items[idx].qty=num(buffer);
+  save();
+  updateTotals();
+}
+function directCostInput(id,value){
   const v=getEditing(); if(!v)return;
   const it=v.items.find(x=>x.id===id); if(!it)return;
-  let s=String(value??'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/٫/g,'.').replace(/,/g,'');
-  if(!/^[-]?\d*(?:\.\d*)?$/.test(s)) return;
-  currentId=id;
-  buffer=s;
-  it.qty=num(s);
+  it.unitCost=num(cleanNumericInput(value));
   save();
-  updateSelBox();
   updateTotals();
-  // بازسازی فهرست انجام نمی‌شود تا مکان نما و صفحه‌کلید موبایل هنگام تایپ از بین نرود.
-  const card=document.querySelector(`.item.sel`);
-  if(card) card.classList.add('sel');
+  // مقدار واردشده مستقیماً در همان کادر باقی می‌ماند؛ لیست را بازسازی نمی‌کنیم.
 }
-
 /* keypad */
 function kpKey(k){
   if(currentId===null){ toast('ابتدا یک قلم را انتخاب کنید'); return; }
@@ -601,10 +589,10 @@ function persistQty(){
 }
 function updateSelBox(){
   const v=getEditing();
-  if(!v||currentId===null){ $('sel-name').textContent='قلمی انتخاب نشده'; $('sel-val').textContent='۰'; $('sel-unit').textContent=''; return; }
+  if(!v||currentId===null){ $('sel-name').textContent='قلمی انتخاب نشده'; $('sel-val-input').value=''; $('sel-unit').textContent=''; return; }
   const it=v.items.find(x=>x.id===currentId); if(!it)return;
   $('sel-name').textContent=it.name;
-  $('sel-val').textContent=groupNum(num(buffer));
+  $('sel-val-input').value=buffer===''?'':buffer;
   $('sel-unit').textContent=it.unit||'';
 }
 function updateTotals(){
