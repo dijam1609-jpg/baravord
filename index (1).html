@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d6efd">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="برآوردکار">
+<meta name="application-name" content="برآوردکار">
+<meta name="description" content="برآوردکار — برآورد هزینه تعمیر و تکمیل ساختمان. سازندهٔ برنامه: سید عبدالمجید افرازی">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<title>برآوردکار | برآورد هزینه تعمیر و تکمیل ساختمان</title>
+<style>
+:root{
+  --bg:#eef2f7; --card:#fff; --ink:#16202e; --muted:#6b7686;
+  --brand:#0d6efd; --brand2:#0a58ca; --brand-l:#e7f0ff;
+  --green:#1a9e5c; --red:#e04040; --amber:#f59e0b;
+  --line:#e3e8f0; --shadow:0 6px 22px rgba(22,32,46,.08);
+  --radius:16px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%}
+body{font-family:Vazirmatn,'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit}
+
+/* ---------- Header ---------- */
+#app{max-width:1280px;margin:0 auto;padding:0 12px 24px}
+header{position:sticky;top:0;z-index:30;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;
+  padding:14px 0 12px;margin:0 -12px 14px;padding-left:12px;padding-right:12px;box-shadow:0 3px 14px rgba(10,88,202,.25)}
+.htop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .licon{font-size:36px;line-height:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.22))}
+.logo .ltext{display:flex;flex-direction:column;font-size:28px;font-weight:900;line-height:1.05;letter-spacing:.3px}
+.logo .ltext small{font-size:11px;font-weight:600;opacity:.9;margin-top:3px;letter-spacing:0}
+.hmeta{margin-inline-start:auto;font-size:11px;opacity:.9;text-align:left;line-height:1.5}
+.tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tab{padding:9px 16px;border-radius:12px;background:rgba(255,255,255,.16);font-size:13px;font-weight:700}
+.tab.on{background:#fff;color:var(--brand)}
+
+/* ---------- Layout ---------- */
+#layout{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:980px){
+  #layout{grid-template-columns:1fr 380px;align-items:start}
+  body:not(.editing) #layout{grid-template-columns:1fr}
+  #side{position:sticky;top:96px}
+}
+.pane{display:none}
+.pane.on{display:block}
+
+/* ---------- Cards ---------- */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-bottom:14px}
+.card h3{margin:0 0 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:13px;
+  font-size:14px;font-weight:700;background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(13,110,253,.25);width:100%}
+.btn.ghost{background:var(--brand-l);color:var(--brand);box-shadow:none}
+.btn.green{background:var(--green);box-shadow:0 4px 12px rgba(26,158,92,.25)}
+.btn.danger{background:#fdecec;color:var(--red);box-shadow:none}
+.btn.sm{width:auto;padding:8px 12px;font-size:12px}
+.btn:active{transform:scale(.98)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1}
+.toolbar{display:flex;gap:8px;margin-bottom:10px}
+.toolbar input{flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+
+/* ---------- Items ---------- */
+.item{border:1px solid var(--line);background:#fff;border-radius:14px;margin-bottom:9px;overflow:hidden;cursor:pointer}
+.item.sel{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-l)}
+.irow{display:flex;align-items:center;gap:10px;padding:11px 12px}
+.inum{width:34px;height:34px;flex:none;border-radius:10px;background:var(--brand-l);color:var(--brand);
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.ititle{flex:1;min-width:0}
+.ititle b{display:block;font-size:14px}
+.ititle span{font-size:11px;color:var(--muted)}
+.iprice{text-align:left;flex:none}
+.iprice b{display:block;font-size:14px;color:var(--green)}
+.iprice span{font-size:11px;color:var(--muted)}
+.ifoot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:0 12px 10px;font-size:11px;color:var(--muted)}
+.ifoot .fld{display:inline-flex;align-items:center;gap:5px}
+.mini-input{width:96px;max-width:32vw;padding:6px 8px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-weight:800;text-align:center;direction:ltr;background:#fff;color:var(--ink)}
+.mini-input:focus{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-l);outline:none}
+
+/* ---------- Keypad ---------- */
+.keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kp{height:58px;border-radius:14px;background:#fff;border:1px solid var(--line);font-size:21px;font-weight:800;
+  box-shadow:0 2px 6px rgba(0,0,0,.05);display:flex;align-items:center;justify-content:center}
+.kp:active{background:#dfe7f2;transform:scale(.96)}
+.kp.op{background:var(--brand-l);color:var(--brand)}
+.kp.del{background:#fdecec;color:var(--red)}
+.kp.ok{background:var(--green);color:#fff;grid-column:span 2}
+@media(min-width:980px){ .kp{height:62px} }
+
+.selbox{background:#0f172a;color:#fff;border-radius:14px;padding:12px;text-align:center;margin-bottom:10px}
+.selbox .n{font-size:30px;font-weight:800;word-break:break-word;direction:ltr}
+.selbox .qty-input,.cost-input{box-sizing:border-box;width:100%;border:2px solid rgba(255,255,255,.22);border-radius:12px;background:#fff;color:#111827;padding:10px 12px;font-size:24px;font-weight:800;text-align:center;direction:ltr;outline:none}
+.selbox .qty-input:focus,.cost-input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.18)}
+.cost-input{width:150px;max-width:42vw;font-size:15px;padding:7px 8px;border:1px solid var(--line);background:#fff}
+.selbox .l{font-size:11px;opacity:.75}
+.totrow{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+.totbig{font-size:22px;font-weight:800;color:var(--brand)}
+
+/* ---------- Photos ---------- */
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.photo{width:84px;height:84px;border-radius:12px;overflow:hidden;position:relative;background:#eee}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo .x{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.55);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px}
+
+/* ---------- Forms ---------- */
+.field{display:block;margin-bottom:12px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700}
+.field input,.field textarea{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+.status{font-size:12px;color:var(--muted);line-height:1.8;margin-top:8px;white-space:pre-wrap}
+.mono{direction:ltr;unicode-bidi:embed}
+.empty{text-align:center;color:var(--muted);padding:28px 10px;font-size:14px}
+.visit{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.vicon{width:42px;height:42px;border-radius:12px;background:var(--brand-l);display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.vt{flex:1;min-width:0}
+.vt b{display:block;font-size:14px}
+.vt span{font-size:11px;color:var(--muted)}
+.vtotal{text-align:left;font-size:13px;color:var(--green);font-weight:800}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#16202e;color:#fff;
+  padding:12px 20px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:500;max-width:86%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#side{display:none}
+body.editing #side{display:block}
+.sheetbar{display:none}
+.sheetbar .grip{width:40px;height:5px;border-radius:3px;background:#c7d0dd;flex:none}
+@media(max-width:979px){
+  /* کیبورد به‌صورت «کشوی پایین» جمع‌شو درمی‌آید تا صفحة بازدید همیشه دیده شود. */
+  body.editing #app{padding-bottom:190px}
+  body.editing.sheet-open #app{padding-bottom:66vh}
+  body.editing #side{position:fixed;left:0;right:0;bottom:0;z-index:40;max-height:64vh;overflow:auto;
+    background:var(--bg);box-shadow:0 -8px 30px rgba(0,0,0,.18);padding:8px 12px calc(env(safe-area-inset-bottom) + 8px);border-radius:18px 18px 0 0}
+  body.editing #side #sheet-more{display:none}
+  body.editing #side.open #sheet-more{display:block}
+  .sheetbar{display:flex;align-items:center;gap:10px;cursor:pointer;padding:2px 2px 8px;user-select:none}
+  #side .selbox .qty-input{font-size:22px;padding:9px 10px}
+}
+.hint{font-size:11px;color:var(--muted);text-align:center;margin-top:6px}
+kbd{background:#eef2f7;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:11px}
+
+/* ---------- سازنده / پشتیبانی / نصب ---------- */
+a.btn{text-decoration:none}
+.maker{display:block;font-size:11px;font-weight:600;opacity:.95;margin-top:3px;line-height:1.7}
+.tel{color:#fff;text-decoration:none;font-weight:700;white-space:nowrap;display:inline-block;margin-top:2px}
+.tel:active{opacity:.7}
+.tel-dark{color:var(--brand);font-weight:800;text-decoration:none;direction:ltr;display:inline-block}
+.sup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--brand-l);border-radius:14px;padding:12px}
+.sup .lab{font-size:12px;color:var(--muted);margin-bottom:2px}
+.sup .big{direction:ltr;font-size:22px;font-weight:800;letter-spacing:.5px;color:var(--brand);text-decoration:none;display:inline-block}
+.guide{font-size:12.5px;line-height:2;color:var(--ink);background:#f6f9ff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px}
+.guide b{color:var(--brand)}
+.guide ol{margin:6px 18px 0 0;padding:0}
+.badge-ok{display:inline-block;background:#e8f7ef;color:var(--green);border-radius:10px;padding:5px 10px;font-size:12px;font-weight:700}
+
+/* ---------- Splash / صفحهٔ شروع (مدرن) ---------- */
+#splash{position:fixed;inset:0;z-index:200;overflow-y:auto;overflow-x:hidden;color:#fff;
+  background:linear-gradient(165deg,#0b1220 0%,#102a63 48%,#071630 100%);
+  display:flex;flex-direction:column;align-items:center;
+  padding:calc(env(safe-area-inset-top) + 34px) 18px calc(env(safe-area-inset-bottom) + 30px)}
+#splash::before{content:'';position:fixed;inset:-12%;z-index:0;pointer-events:none;filter:blur(16px);
+  background:
+    radial-gradient(closest-side,rgba(59,130,246,.55),transparent 70%) 18% 12%/48% 48% no-repeat,
+    radial-gradient(closest-side,rgba(34,211,238,.40),transparent 70%) 86% 20%/44% 44% no-repeat,
+    radial-gradient(closest-side,rgba(167,139,250,.40),transparent 70%) 62% 92%/54% 54% no-repeat;
+  animation:sp-float 16s ease-in-out infinite alternate}
+@keyframes sp-float{from{transform:translate3d(-2%,-1.5%,0)}to{transform:translate3d(2%,1.5%,0)}}
+#splash>*{position:relative;z-index:1}
+#splash.hidden{display:none}
+
+/* انیمیشن ورود پلکانی عناصر — محتوا به‌صورت پیش‌فرض دیده می‌شود و
+   فقط وقتی کاربر «کاهش حرکت» را فعال نکرده باشد انیمیشن اجرا می‌شود */
+@keyframes sp-in{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion: no-preference){
+  .sp-logo,.sp-name,.sp-tag,.sp-card,.sp-menu .menu-btn,.sp-foot{
+    animation:sp-in .65s cubic-bezier(.16,1,.3,1) backwards}
+  .sp-logo{animation-delay:.04s}
+  .sp-name{animation-delay:.12s}
+  .sp-tag{animation-delay:.20s}
+  .sp-card{animation-delay:.28s}
+  .sp-menu .menu-btn:nth-child(1){animation-delay:.38s}
+  .sp-menu .menu-btn:nth-child(2){animation-delay:.46s}
+  .sp-menu .menu-btn:nth-child(3){animation-delay:.54s}
+  .sp-menu .menu-btn:nth-child(4){animation-delay:.62s}
+  .sp-foot{animation-delay:.72s}
+}
+
+/* لوگو */
+.sp-logo{width:116px;height:116px;border-radius:34px;display:flex;align-items:center;justify-content:center;
+  font-size:62px;line-height:1;
+  background:linear-gradient(145deg,rgba(255,255,255,.30),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:0 24px 55px -16px rgba(2,14,45,.95),inset 0 2px 12px rgba(255,255,255,.30);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+/* نام و شعار */
+.sp-name{font-size:44px;font-weight:900;margin-top:18px;letter-spacing:.6px;
+  background:linear-gradient(180deg,#ffffff 30%,#b9d1ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 8px 22px rgba(80,140,255,.55))}
+.sp-tag{font-size:14px;opacity:.94;margin-top:8px;text-align:center;line-height:2;max-width:520px;color:#dbe7ff}
+
+/* کارت شیشه‌ای سازنده/پشتیبانی */
+.sp-card{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);border-radius:22px;
+  padding:16px;margin-top:26px;width:100%;max-width:520px;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 22px 52px -22px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.18)}
+.sp-card .lab{font-size:12px;opacity:.85;font-weight:600}
+.sp-card .val{font-size:19px;font-weight:800;margin-top:2px;line-height:1.6}
+.sp-card .val a{color:#fff;text-decoration:none}
+
+/* دکمه‌های منو */
+.sp-menu{width:100%;max-width:520px;margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.menu-btn{position:relative;overflow:hidden;border-radius:22px;padding:18px 12px;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:800;
+  color:var(--brand);background:linear-gradient(160deg,#ffffff,#eaf1ff);
+  border:1px solid rgba(255,255,255,.75);min-height:118px;
+  box-shadow:0 18px 38px -16px rgba(2,14,45,.85),inset 0 1px 0 #fff;
+  transition:transform .2s cubic-bezier(.2,.9,.3,1.35),box-shadow .28s ease}
+.menu-btn:hover{transform:translateY(-4px);box-shadow:0 26px 48px -16px rgba(2,14,45,.95),inset 0 1px 0 #fff}
+.menu-btn:active{transform:scale(.96)}
+.menu-btn::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:45%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);transform:skewX(-18deg)}
+.menu-btn:hover::after{animation:sp-sheen .85s ease}
+@keyframes sp-sheen{to{left:130%}}
+.menu-btn .mi{width:58px;height:58px;border-radius:19px;display:flex;align-items:center;justify-content:center;
+  font-size:31px;line-height:1;color:#fff;
+  background:linear-gradient(145deg,#3b82f6,#0d6efd);
+  box-shadow:0 12px 24px -9px rgba(13,110,253,.95),inset 0 1px 0 rgba(255,255,255,.45)}
+.menu-btn:nth-child(2) .mi{background:linear-gradient(145deg,#22d3ee,#0891b2);box-shadow:0 12px 24px -9px rgba(8,145,178,.95),inset 0 1px 0 rgba(255,255,255,.45)}
+.menu-btn:nth-child(3) .mi{background:linear-gradient(145deg,#a78bfa,#7c3aed);box-shadow:0 12px 24px -9px rgba(124,58,237,.95),inset 0 1px 0 rgba(255,255,255,.45)}
+.menu-btn:nth-child(4) .mi{background:linear-gradient(145deg,#34d399,#059669);box-shadow:0 12px 24px -9px rgba(5,150,105,.95),inset 0 1px 0 rgba(255,255,255,.45)}
+.menu-btn.wide{grid-column:1 / -1;flex-direction:row;min-height:74px;gap:14px}
+.menu-btn.wide .mi{width:50px;height:50px;border-radius:16px;font-size:25px}
+
+.sp-foot{margin-top:auto;padding-top:26px;font-size:11.5px;opacity:.85;text-align:center}
+
+@media(max-width:420px){
+  .sp-name{font-size:33px}.sp-logo{width:96px;height:96px;font-size:52px}
+  .menu-btn{font-size:14px;min-height:106px}.menu-btn .mi{width:52px;height:52px;font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  #splash::before{animation:none}
+  .menu-btn{transition:none}.menu-btn:hover{transform:none}.menu-btn:hover::after{animation:none}
+}
+</style>
+</head>
+<body>
+<!-- ================= صفحهٔ شروع (Splash / Home) ================= -->
+<div id="splash">
+  <div class="sp-logo">🏗️</div>
+  <div class="sp-name">برآوردکار</div>
+  <div class="sp-tag">برآورد هزینه تعمیر و تکمیل ساختمان</div>
+
+  <div class="sp-card">
+    <div class="lab">سازندهٔ برنامه</div>
+    <div class="val">سید عبدالمجید افرازی</div>
+    <div class="lab" style="margin-top:12px">تماس و پشتیبانی</div>
+    <div class="val"><a href="tel:09367343370">۰۹۳۶۷۳۴۳۳۷۰</a></div>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" style="background:#fff;color:var(--brand);box-shadow:none" href="tel:09367343370">📞 تماس</a>
+      <button class="btn" style="background:rgba(255,255,255,.22);color:#fff;box-shadow:none" onclick="copyPhone()">📋 کپی شماره</button>
+    </div>
+  </div>
+
+  <div class="sp-menu">
+    <button class="menu-btn" onclick="openApp('main')"><span class="mi">📋</span>شیت اصلی</button>
+    <button class="menu-btn" onclick="openApp('visits')"><span class="mi">🗂️</span>بازدیدها</button>
+    <button class="menu-btn" onclick="openApp('settings')"><span class="mi">⚙️</span>تنظیمات</button>
+    <button class="menu-btn wide" onclick="installApp()"><span class="mi">📲</span>نصب برنامه روی گوشی</button>
+  </div>
+
+  <div class="sp-foot">برآوردکار — نسخهٔ ۲.۳</div>
+</div>
+
+<div id="app">
+  <header>
+    <div class="htop">
+      <div class="logo">
+        <span class="licon">🏗️</span>
+        <span class="ltext">برآوردکار<small>برآورد هزینه تعمیر و تکمیل ساختمان</small></span>
+      </div>
+      <div class="hmeta"><span id="hdr-mode">شیت اصلی</span><br><span id="hdr-date"></span></div>
+      <button class="btn ghost sm" id="btn-install" onclick="installApp()">📲 نصب روی گوشی</button>
+    </div>
+    <div class="tabs">
+      <button class="tab" data-tab="home" onclick="showSplash()">🏠 خانه</button>
+      <button class="tab on" data-tab="main" onclick="goTab('main')">📋 شیت اصلی</button>
+      <button class="tab" data-tab="visits" onclick="goTab('visits')">🗂️ بازدیدها</button>
+      <button class="tab" data-tab="settings" onclick="goTab('settings')">⚙️ تنظیمات</button>
+    </div>
+  </header>
+
+  <div id="layout">
+    <main>
+      <!-- MAIN SHEET -->
+      <section class="pane on" id="pane-main">
+        <div class="toolbar">
+          <input id="srch-main" placeholder="🔍 جستجوی قلم..." oninput="renderMain()">
+          <button class="btn sm" onclick="addMainItem()">＋ قلم جدید</button>
+        </div>
+        <div id="main-list"></div>
+      </section>
+
+      <!-- VISITS -->
+      <section class="pane" id="pane-visits">
+        <button class="btn green" onclick="newVisit()">＋ بازدید جدید</button>
+        <div id="visit-list" style="margin-top:12px"></div>
+      </section>
+
+      <!-- EDITOR -->
+      <section class="pane" id="pane-editor">
+        <div class="card">
+          <h3>ℹ️ اطلاعات بازدید <button class="btn ghost sm" style="margin-inline-start:auto" onclick="editVisitInfo()">✎ ویرایش</button></h3>
+          <div id="ed-info"></div>
+        </div>
+        <div class="card">
+          <h3>📸 عکس‌های پروژه</h3>
+          <div class="photos" id="ed-photos"></div>
+          <button class="btn ghost" style="margin-top:10px" onclick="addPhoto()">📷 افزودن عکس (دوربین/فایل)</button>
+        </div>
+        <div class="card">
+          <h3>🧾 اقلام و مقادیر</h3>
+          <div class="toolbar"><input id="srch-ed" placeholder="🔍 جستجوی قلم..." oninput="renderEditorList()"></div>
+          <div id="ed-list"></div>
+        </div>
+        <div class="row">
+          <button class="btn" onclick="saveAndBack()">✔ ذخیره و بازگشت</button>
+          <button class="btn green" onclick="exportOneVisit(editingVisitId)">📤 خروجی اکسل این بازدید</button>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>📊 جمع‌بندی</h3>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="padding:6px 0">جمع اقلام</td><td class="mono" id="sum-sub" style="text-align:left;font-weight:700"></td></tr>
+            <tr><td style="padding:6px 0">مدیریت پیمان</td><td class="mono" id="sum-fee" style="text-align:left"></td></tr>
+            <tr style="border-top:2px solid var(--line)"><td style="padding:8px 0;font-weight:800">مجموع کل</td>
+              <td class="mono" id="sum-total" style="text-align:left;font-weight:800;color:var(--brand)"></td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="pane" id="pane-settings">
+        <div class="card">
+          <h3>💾 داده‌ها و پشتیبان‌گیری</h3>
+          <button class="btn ghost" onclick="importExcelUI()">📥 ورود شیت اصلی از اکسل</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="exportMasterExcel()">📤 خروجی اکسل شیت اصلی</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="exportAllVisitsExcel()">📦 خروجی یک فایل اکسل با همه بازدیدها (هر بازدید یک شیت)</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="exportBackup()">🗄️ پشتیبان کامل (JSON)</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="importBackupUI()">📥 بازیابی پشتیبان</button>
+          <div class="status" id="data-status">داده‌ها به‌صورت محلی در حافظه دستگاه (کامپیوتر/موبایل) ذخیره می‌شوند.</div>
+        </div>
+        <div class="card">
+          <h3>☁️ OneDrive (Microsoft Graph)</h3>
+          <div class="field"><label>Client ID (ثبت اپ در Azure — نوع SPA)</label>
+            <input id="od-client" dir="ltr" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+          <button class="btn" onclick="odLogin()">🔗 اتصال به OneDrive</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="odUploadAll()">⬆️ بارگذاری داده‌ها روی OneDrive</button>
+          <button class="btn ghost" style="margin-top:8px" onclick="odDownloadMaster()">⬇️ دریافت شیت اصلی از OneDrive</button>
+          <div class="status" id="od-log"></div>
+        </div>
+        <div class="card">
+          <h3>⚙️ پارامترها</h3>
+          <div class="field"><label>درصد «مدیریت پیمان» (٪)</label>
+            <input id="fee" type="number" inputmode="decimal"></div>
+          <button class="btn ghost" onclick="saveParams()">ذخیره</button>
+        </div>
+        <div class="card" id="card-install">
+          <h3>📲 نصب برنامه روی گوشی (از طریق مرورگر)</h3>
+          <button class="btn green" onclick="installApp()">⬇️ نصب / افزودن به صفحهٔ اصلی</button>
+          <div id="install-badge" style="margin-top:10px"></div>
+          <div class="guide" id="install-guide"></div>
+          <div class="status" id="install-status"></div>
+        </div>
+        <div class="card" id="card-support">
+          <h3>📞 تماس و پشتیبانی</h3>
+          <div class="sup">
+            <div>
+              <div class="lab">شماره تماس و پشتیبانی</div>
+              <a class="big" href="tel:09367343370">۰۹۳۶۷۳۴۳۳۷۰</a>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <a class="btn" href="tel:09367343370">📞 تماس مستقیم</a>
+            <button class="btn ghost" onclick="copyPhone()">📋 کپی شماره</button>
+          </div>
+          <div class="status">سازندهٔ برنامه: <b>سید عبدالمجید افرازی</b>\nپاسخگویی و پشتیبانی فنی در ساعات کاری.</div>
+        </div>
+        <div class="card">
+          <h3>🧹 مدیریت</h3>
+          <button class="btn danger" onclick="wipeAll()">حذف همه داده‌ها</button>
+        </div>
+        <div class="status" style="text-align:center;margin-top:10px">برآوردکار نسخهٔ ۲.۳ — سازگار با کامپیوتر و موبایل و قابل نصب روی گوشی
+——————————————————
+سازندهٔ برنامه: <b>سید عبدالمجید افرازی</b>
+شماره تماس و پشتیبانی: <a class="tel-dark" href="tel:09367343370">۰۹۳۶۷۳۴۳۳۷۰</a></div>
+      </section>
+    </main>
+
+    <!-- SIDE (keypad + totals) -->
+    <aside id="side">
+      <div class="card">
+        <div class="sheetbar" onclick="toggleSheet()">
+          <span class="grip"></span>
+          <div style="flex:1;text-align:right;line-height:1.4">
+            <div style="font-size:12px;font-weight:800" id="sb-title">ورود مقدار</div>
+            <div class="mono" id="sb-total" style="font-size:12px;color:var(--green);font-weight:800">۰</div>
+          </div>
+          <button class="btn ghost sm" id="sb-btn" onclick="event.stopPropagation();toggleSheet()">⌨ کیبورد</button>
+        </div>
+        <div class="selbox">
+          <div class="l" id="sel-name">قلمی انتخاب نشده</div>
+          <input id="sel-val-input" class="qty-input" type="text" inputmode="decimal" autocomplete="off" placeholder="مقدار" aria-label="مقدار" oninput="directQtyInput(this.value)" onclick="event.stopPropagation()">
+          <div class="l" id="sel-unit"></div>
+        </div>
+        <div id="sheet-more">
+        <div class="keypad">
+          <button class="kp" onclick="kpKey('7')">۷</button>
+          <button class="kp" onclick="kpKey('8')">۸</button>
+          <button class="kp" onclick="kpKey('9')">۹</button>
+          <button class="kp del" onclick="kpKey('<')">⌫</button>
+          <button class="kp" onclick="kpKey('4')">۴</button>
+          <button class="kp" onclick="kpKey('5')">۵</button>
+          <button class="kp" onclick="kpKey('6')">۶</button>
+          <button class="kp op" onclick="kpKey('.')">٫</button>
+          <button class="kp" onclick="kpKey('1')">۱</button>
+          <button class="kp" onclick="kpKey('2')">۲</button>
+          <button class="kp" onclick="kpKey('3')">۳</button>
+          <button class="kp op" onclick="kpClear()">C</button>
+          <button class="kp op" onclick="kpKey('-')">−</button>
+          <button class="kp" onclick="kpKey('0')">۰</button>
+          <button class="kp op" onclick="kpKey('00')">۰۰</button>
+          <button class="kp ok" onclick="kpDone()">✔ تأیید</button>
+        </div>
+        <div class="hint">روی کامپیوتر: کلیدهای عددی، <kbd>Enter</kbd> تأیید، <kbd>Esc</kbd> بستن</div>
+        <div style="border-top:1px solid var(--line);margin-top:12px;padding-top:10px">
+          <div class="totrow"><span>جمع اقلام</span><span class="mono" id="side-sub">۰</span></div>
+          <div class="totrow"><span>مدیریت پیمان</span><span class="mono" id="side-fee">۰</span></div>
+          <div class="totrow" style="align-items:center"><span style="font-weight:700;color:var(--ink)">مجموع کل</span>
+            <span class="totbig" id="side-total">۰</span></div>
+        </div>
+        <button class="btn ghost" style="margin-top:10px" onclick="saveAndBack()">✔ ذخیره و بازگشت</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   برآوردکار ۲.۰ — نسخهٔ یکپارچه کامپیوتر + موبایل
+   ========================================================= */
+const STORE='baravardkar_v2';
+const DEFAULT_ITEMS=[
+ {"name":"کمیسیون خرید","unit":"","unitCost":50000000},
+ {"name":"خرید تاسیسات","unit":"ضریب","unitCost":20000000},
+ {"name":"دستمزد تاسیسات","unit":"ضریب","unitCost":20000000},
+ {"name":"کناف سقف","unit":"متر مربع","unitCost":1500000},
+ {"name":"کناف باکس","unit":"متر","unitCost":650000},
+ {"name":"رنگ آکرولیک","unit":"متر مربع","unitCost":150000},
+ {"name":"رنگ پلاستیک","unit":"متر مربع","unitCost":50000},
+ {"name":"رنگ روغن","unit":"کیلوگرم","unitCost":700000},
+ {"name":"دستمزد رنگ","unit":"متر مربع","unitCost":300000},
+ {"name":"کاغذ دیواری","unit":"متر مربع","unitCost":300000},
+ {"name":"خرید چوب","unit":"شیت","unitCost":11000000},
+ {"name":"خدمات برش چوب","unit":"شیت","unitCost":1000000},
+ {"name":"یراق آلات","unit":"ست","unitCost":0},
+ {"name":"دستمزد چوب","unit":"درصد از خرید چوب","unitCost":0},
+ {"name":"سینک","unit":"عدد","unitCost":15000000},
+ {"name":"گاز رومیزی","unit":"عدد","unitCost":20000000},
+ {"name":"شیرآلات نصبی","unit":"ست","unitCost":20000000},
+ {"name":"توالت فرنگی","unit":"عدد","unitCost":11000000},
+ {"name":"هود","unit":"عدد","unitCost":10000000},
+ {"name":"سنگ روشویی","unit":"عدد","unitCost":9000000},
+ {"name":"آینه","unit":"عدد","unitCost":5000000},
+ {"name":"در داخلی","unit":"عدد","unitCost":8000000},
+ {"name":"رنگ در داخلی","unit":"عدد","unitCost":500000},
+ {"name":"در ضد سرقت","unit":"عدد","unitCost":40000000},
+ {"name":"اصلاح پنجره","unit":"سرویس","unitCost":1000000},
+ {"name":"خرید برق","unit":"ست","unitCost":30000000},
+ {"name":"دستمزد برق","unit":"ضریب","unitCost":10000000},
+ {"name":"خرید سرامیک","unit":"متر مربع","unitCost":500000},
+ {"name":"دستمزد سرامیک","unit":"متر مربع","unitCost":200000},
+ {"name":"خرید بنایی","unit":"ضریب","unitCost":10000000},
+ {"name":"دستمزد بنایی","unit":"نفر روز","unitCost":2500000},
+ {"name":"نخاله","unit":"باکس","unitCost":1500000},
+ {"name":"گچکاری","unit":"نفر روز","unitCost":5000000},
+ {"name":"انشعاب برق","unit":"کنتور","unitCost":25000000},
+ {"name":"انشعاب آب","unit":"کنتور","unitCost":12000000},
+ {"name":"انشعاب گاز","unit":"کنتور","unitCost":18000000},
+ {"name":"قرنیز","unit":"متر","unitCost":150000},
+ {"name":"نظافت","unit":"نفر روز","unitCost":1000000},
+ {"name":"حمل","unit":"نوبت","unitCost":300000},
+ {"name":"هزینه های قانونی","unit":"ضریب","unitCost":10000000},
+ {"name":"متفرقه","unit":"ضریب","unitCost":10000000},
+ {"name":"درآمدها","unit":"ضریب","unitCost":-10000000}
+];
+
+let state={items:[],visits:[],feePercent:15,od:{clientId:'',token:null,exp:0}};
+let editingVisitId=null, currentId=null, buffer='', deferredPrompt=null;
+
+/* ---------- utils ---------- */
+const $=id=>document.getElementById(id);
+const faDigits=s=>String(s).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+function groupNum(v){
+  const neg=v<0; const abs=Math.abs(v);
+  const s=(abs%1===0)?abs.toFixed(0):abs.toFixed(2);
+  const p=s.split('.'); let o='';
+  for(let i=0;i<p[0].length;i++){ if(i>0&&(p[0].length-i)%3===0)o+=','; o+=p[0][i]; }
+  if(p[1])o+='.'+p[1];
+  return (neg?'-':'')+faDigits(o);
+}
+function money(v){ const a=Math.abs(v); let s;
+  if(a>=1e9)s=(v/1e9).toFixed(1).replace(/\.0$/,'')+' میلیارد';
+  else if(a>=1e6)s=(v/1e6).toFixed(0)+' میلیون';
+  else if(a>=1e3)s=(v/1e3).toFixed(0)+' هزار';
+  else s=groupNum(v);
+  return s+' تومان';
+}
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:0;};
+const norm=v=>String(v==null?'':v).replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/[\u200c\u200f\u202a-\u202e]/g,'').replace(/\s+/g,' ').trim();
+const isPct=u=>String(u||'').includes('درصد از');
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2400);}
+function today(){ try{ return faDigits(new Intl.DateTimeFormat('fa-IR').format(new Date())); }catch(e){ return faDigits(new Date().toLocaleDateString()); } }
+
+/* ---------- storage ---------- */
+function save(){ try{ localStorage.setItem(STORE,JSON.stringify(state)); }catch(e){ toast('خطا در ذخیره‌سازی'); } }
+function load(){
+  try{ const r=localStorage.getItem(STORE); if(r) state=JSON.parse(r); }catch(e){}
+  if(!Array.isArray(state.items))state.items=[];
+  if(!Array.isArray(state.visits))state.visits=[];
+  if(!state.od)state.od={clientId:'',token:null,exp:0};
+  if(!state.items.length){ state.items=DEFAULT_ITEMS.map((it,i)=>({...it,id:i+1})); save(); }
+}
+
+/* ---------- tabs ---------- */
+function goTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  document.querySelectorAll('main .pane').forEach(p=>p.classList.remove('on'));
+  document.body.classList.remove('editing');
+  document.body.classList.remove('sheet-open');
+  const _side=$('side'); if(_side) _side.classList.remove('open');
+  currentId=null; editingVisitId=null; buffer='';
+  if(t==='main'){ $('pane-main').classList.add('on'); $('hdr-mode').textContent='شیت اصلی'; renderMain(); }
+  if(t==='visits'){ $('pane-visits').classList.add('on'); $('hdr-mode').textContent='بازدیدها'; renderVisits(); }
+  if(t==='settings'){ $('pane-settings').classList.add('on'); $('hdr-mode').textContent='تنظیمات'; renderSettings(); }
+}
+/* ---------- صفحهٔ شروع (Splash / Home) ---------- */
+function hideSplash(){ const s=$('splash'); if(s) s.classList.add('hidden'); }
+function showSplash(){ const s=$('splash'); if(s) s.classList.remove('hidden'); window.scrollTo(0,0); }
+function openApp(t){ hideSplash(); goTab(t||'main'); }
+
+/* =========================================================
+   MAIN SHEET
+   ========================================================= */
+function renderMain(){
+  const q=norm($('srch-main').value||'');
+  const list=state.items.filter(it=>!q||norm(it.name).includes(q));
+  const box=$('main-list');
+  if(!list.length){ box.innerHTML='<div class="empty">قلمی یافت نشد</div>'; return; }
+  box.innerHTML=list.map(it=>`
+    <div class="item">
+      <div class="irow">
+        <div class="inum">${faDigits(it.id)}</div>
+        <div class="ititle"><b>${it.name}</b><span>${it.unit||'—'}</span></div>
+        <div class="iprice"><b class="mono">${groupNum(it.unitCost)}</b><span>هزینه واحد</span></div>
+        <button class="btn ghost sm" onclick="editMainCost(${it.id})">✎ ویرایش</button>
+      </div>
+    </div>`).join('');
+}
+function editMainCost(id){
+  const it=state.items.find(x=>x.id===id); if(!it)return;
+  const v=prompt('هزینه واحد «'+it.name+'» (تومان):',it.unitCost||0);
+  if(v===null)return; it.unitCost=num(v); save(); renderMain(); toast('به‌روزرسانی شد');
+}
+function addMainItem(){
+  const name=prompt('نام قلم جدید:'); if(!name)return;
+  const unit=prompt('واحد محاسبه (متر مربع/عدد/ضریب/درصد از ...):')||'';
+  const cost=prompt('هزینه واحد (تومان):')||'0';
+  const id=Math.max(0,...state.items.map(i=>i.id))+1;
+  state.items.push({id,name:norm(name),unit:norm(unit),unitCost:num(cost)}); save(); renderMain(); toast('قلم افزوده شد');
+}
+
+/* =========================================================
+   VISITS
+   ========================================================= */
+function renderVisits(){
+  const box=$('visit-list');
+  if(!state.visits.length){ box.innerHTML='<div class="empty">هنوز بازدیدی ثبت نشده است.<br>با «بازدید جدید» شروع کنید.</div>'; return; }
+  const rows=state.visits.slice().reverse().map(v=>`
+    <div class="visit">
+      <div class="vicon">🗂️</div>
+      <div class="vt"><b>${v.title||('بازدید '+faDigits(v.id))}</b><span>${v.place||''} • ${v.date||''} • ${faDigits((v.photos||[]).length)} عکس</span></div>
+      <div class="vtotal">${money(visitTotal(v))}</div>
+      <button class="btn sm" onclick="openVisit(${v.id})">باز</button>
+      <button class="btn danger sm" onclick="delVisit(${v.id})">🗑</button>
+    </div>`).join('');
+  const grand=state.visits.reduce((a,v)=>a+visitTotal(v),0);
+  const summary = state.visits.length>1 ? `<div class="card"><h3>📊 جمع کل بازدیدها</h3>
+     <div style="font-size:22px;font-weight:800;color:var(--green)">${money(grand)}</div>
+     <div class="status">${faDigits(state.visits.length)} بازدید ثبت‌شده</div></div>` : '';
+  box.innerHTML=rows+summary;
+}
+function newVisit(){
+  if(!state.items.length){ toast('ابتدا اقلام شیت اصلی را وارد کنید'); return; }
+  const items=state.items.map(it=>({id:it.id,name:it.name,unit:it.unit,unitCost:it.unitCost,qty:0}));
+  const v={id:Date.now(),title:'',place:'',date:today(),inspector:'',items,photos:[],feePercent:num(state.feePercent)||15};
+  state.visits.push(v); save(); openVisit(v.id);
+}
+function delVisit(id){
+  if(!confirm('این بازدید و عکس‌هایش حذف شود؟'))return;
+  state.visits=state.visits.filter(v=>v.id!==id); save(); renderVisits(); toast('حذف شد');
+}
+function openVisit(id){
+  const v=state.visits.find(x=>x.id===id); if(!v)return;
+  editingVisitId=id; currentId=null; buffer='';
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('main .pane').forEach(p=>p.classList.remove('on'));
+  $('pane-editor').classList.add('on');
+  document.body.classList.add('editing');
+  document.body.classList.remove('sheet-open');
+  const side=$('side'); if(side){ side.classList.remove('open'); }
+  const sbBtn=$('sb-btn'); if(sbBtn) sbBtn.textContent='⌨ کیبورد';
+  $('hdr-mode').textContent='ویرایش بازدید';
+  renderEditor();
+}
+
+/* ---------- calculations ---------- */
+function itemCost(v,it){
+  const q=num(it.qty);
+  if(isPct(it.unit)){
+    const ref=norm(String(it.unit).replace('درصد از',''));
+    const r=v.items.find(x=>norm(x.name)===ref);
+    return r?itemCost(v,r)*q:0;
+  }
+  return q*num(it.unitCost);
+}
+function visitSub(v){ return v.items.reduce((a,it)=>a+itemCost(v,it),0); }
+function visitFee(v){ return visitSub(v)*num(v.feePercent)/100; }
+function visitTotal(v){ return visitSub(v)+visitFee(v); }
+
+/* ---------- editor ---------- */
+function renderEditor(){
+  const v=getEditing(); if(!v)return;
+  $('ed-info').innerHTML=`
+    <div>عنوان: <b>${v.title||'—'}</b></div>
+    <div>محل: <b>${v.place||'—'}</b></div>
+    <div>تاریخ: <b>${v.date||'—'}</b></div>
+    <div>بازدیددهنده: <b>${v.inspector||'—'}</b></div>`;
+  renderEditorPhotos(v);
+  renderEditorList();
+  updateTotals();
+  updateSelBox();
+}
+function renderEditorPhotos(v){
+  const ph=v.photos||[];
+  $('ed-photos').innerHTML = ph.length? ph.map((p,i)=>
+    `<div class="photo"><img src="${p}"><button class="x" onclick="delPhoto(${i})">✕</button></div>`).join('')
+    : '<div class="empty" style="padding:12px">عکسی ثبت نشده</div>';
+}
+function renderEditorList(){
+  const v=getEditing(); if(!v)return;
+  const q=norm($('srch-ed').value||'');
+  const list=v.items.filter(it=>!q||norm(it.name).includes(q));
+  const box=$('ed-list');
+  if(!list.length){ box.innerHTML='<div class="empty">قلمی یافت نشد</div>'; return; }
+  box.innerHTML=list.map(it=>{
+    const sel=currentId===it.id;
+    const qty=sel?num(buffer):num(it.qty);
+    const cost=(()=>{ const clone={...it,qty}; const tmp={...v,items:v.items.map(e=>e.id===it.id?clone:e)}; return itemCost(tmp,clone); })();
+    return `<div class="item ${sel?'sel':''}" onclick="selectItem(${it.id})">
+      <div class="irow">
+        <div class="inum">${faDigits(it.id)}</div>
+        <div class="ititle"><b>${it.name}</b><span>${it.unit||'—'}</span></div>
+        <div class="iprice"><b id="qtydisp-${it.id}">${groupNum(qty)}</b><span>مقدار</span></div>
+      </div>
+      <div class="ifoot">
+        <span class="fld">مقدار:
+          <input class="mini-input" id="qtyin-${it.id}" type="text" inputmode="decimal" autocomplete="off" value="${fmtInput(qty)}" aria-label="مقدار" onclick="event.stopPropagation()" oninput="directItemQtyInput(${it.id},this.value)">
+        </span>
+        <span class="fld">هزینه واحد:
+          ${isPct(it.unit)?`<b class="mono" style="color:var(--ink)">${groupNum(it.unitCost)}</b>`:`<input class="mini-input" id="costin-${it.id}" type="text" inputmode="decimal" autocomplete="off" value="${it.unitCost||0}" aria-label="هزینه واحد" onclick="event.stopPropagation()" oninput="directCostInput(${it.id},this.value)">`}
+        </span>
+        <span>مجموع: <b class="mono" style="color:var(--green)" id="rowsum-${it.id}">${groupNum(cost)}</b></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function selectItem(id){
+  if(currentId===id){ currentId=null; buffer=''; }
+  else { currentId=id; const it=getEditing().items.find(x=>x.id===id); buffer=fmtInput(it.qty); }
+  renderEditorList(); updateSelBox(); updateTotals();
+  if(window.matchMedia('(max-width:979px)').matches) toggleSheet(currentId!==null);
+}
+/* کشوی پایین کیبورد: باز/بسته */
+function toggleSheet(force){
+  const side=$('side'); if(!side)return;
+  const open = (force===undefined) ? !side.classList.contains('open') : !!force;
+  side.classList.toggle('open', open);
+  document.body.classList.toggle('sheet-open', open);
+  const b=$('sb-btn'); if(b) b.textContent = open ? '⌄ بستن' : '⌨ کیبورد';
+}
+function fmtInput(q){ q=num(q); return q%1===0?String(q):String(q); }
+
+function cleanNumericInput(v){
+  return String(v==null?'':v)
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/٫/g,'.').replace(/,/g,'').replace(/٬/g,'')
+    .replace(/[^0-9.\-]/g,'');
+}
+function directQtyInput(value){
+  if(currentId===null){ toast('ابتدا یک قلم را انتخاب کنید'); return; }
+  buffer=cleanNumericInput(value);
+  const v=getEditing(); if(!v)return;
+  const idx=v.items.findIndex(x=>x.id===currentId); if(idx<0)return;
+  v.items[idx].qty=num(buffer);
+  save();
+  refreshRow(currentId);
+  updateTotals();
+}
+function directCostInput(id,value){
+  const v=getEditing(); if(!v)return;
+  const it=v.items.find(x=>x.id===id); if(!it)return;
+  it.unitCost=num(cleanNumericInput(value));
+  save();
+  refreshRow(id);
+  updateTotals();
+  // مقدار واردشده مستقیماً در همان کادر باقی می‌ماند؛ لیست را بازسازی نمی‌کنیم.
+}
+/* ورود دستی مقدار برای هر قلم (بدون نیاز به انتخاب/کیبورد) */
+function directItemQtyInput(id,value){
+  const v=getEditing(); if(!v)return;
+  const it=v.items.find(x=>x.id===id); if(!it)return;
+  const clean=cleanNumericInput(value);
+  it.qty=num(clean);
+  if(currentId===id) buffer=clean;
+  save();
+  refreshRow(id);
+  updateTotals();
+}
+/* به‌روزرسانی زندهٔ مجموع سطر و اقلام درصدی وابسته (بدون بازسازی کل لیست) */
+function refreshRow(id){
+  const v=getEditing(); if(!v)return;
+  const it=v.items.find(x=>x.id===id); if(!it)return;
+  const rs=document.getElementById('rowsum-'+id); if(rs) rs.textContent=groupNum(itemCost(v,it));
+  const qd=document.getElementById('qtydisp-'+id); if(qd) qd.textContent=groupNum(num(it.qty));
+  v.items.forEach(x=>{
+    if(isPct(x.unit) && norm(String(x.unit).replace('درصد از',''))===norm(it.name)){
+      const r2=document.getElementById('rowsum-'+x.id); if(r2) r2.textContent=groupNum(itemCost(v,x));
+    }
+  });
+}
+/* keypad */
+function kpKey(k){
+  if(currentId===null){ toast('ابتدا یک قلم را انتخاب کنید'); return; }
+  let s=buffer;
+  if(k==='<') s=s.slice(0,-1);
+  else if(k==='-') s=s.startsWith('-')?s.slice(1):'-'+s;
+  else if(k==='.'){ if(!s.includes('.')) s=s?s+'.':'0.'; }
+  else if(k==='00') s=(s==='0')?'0':s+'00';
+  else s=(s==='0')?k:s+k;
+  buffer=s; persistQty();
+}
+function kpClear(){ buffer=''; persistQty(); }
+function kpDone(){ currentId=null; buffer=''; renderEditorList(); updateSelBox(); updateTotals();
+  if(window.matchMedia('(max-width:979px)').matches) toggleSheet(false); }
+function persistQty(){
+  const v=getEditing(); if(!v||currentId===null)return;
+  const idx=v.items.findIndex(x=>x.id===currentId); if(idx<0)return;
+  v.items[idx].qty=num(buffer);
+  save(); renderEditorList(); updateSelBox(); updateTotals();
+}
+function updateSelBox(){
+  const v=getEditing();
+  if(!v||currentId===null){ $('sel-name').textContent='قلمی انتخاب نشده'; $('sel-val-input').value=''; $('sel-unit').textContent=''; return; }
+  const it=v.items.find(x=>x.id===currentId); if(!it)return;
+  $('sel-name').textContent=it.name;
+  $('sel-val-input').value=buffer===''?'':buffer;
+  $('sel-unit').textContent=it.unit||'';
+}
+function updateTotals(){
+  const v=getEditing(); if(!v)return;
+  const sub=visitSub(v), fee=visitFee(v), tot=sub+fee;
+  $('side-sub').textContent=groupNum(sub);
+  $('side-fee').textContent=groupNum(fee);
+  $('side-total').textContent=money(tot);
+  const sbt=$('sb-total'); if(sbt) sbt.textContent=money(tot);
+  if($('sum-sub')){ $('sum-sub').textContent=groupNum(sub); $('sum-fee').textContent=groupNum(fee); $('sum-total').textContent=groupNum(tot); }
+}
+function editUnitCost(id){
+  const v=getEditing(); const it=v.items.find(x=>x.id===id); if(!it)return;
+  const val=prompt('هزینه واحد «'+it.name+'» (تومان):',it.unitCost||0);
+  if(val===null)return; it.unitCost=num(val); save(); renderEditorList(); updateTotals();
+}
+function editVisitInfo(){
+  const v=getEditing();
+  const title=prompt('عنوان بازدید:',v.title||''); if(title===null)return;
+  const place=prompt('محل بازدید:',v.place||''); if(place===null)return;
+  const date=prompt('تاریخ بازدید:',v.date||''); if(date===null)return;
+  const insp=prompt('بازدیددهنده:',v.inspector||''); if(insp===null)return;
+  v.title=norm(title); v.place=norm(place); v.date=norm(date); v.inspector=norm(insp);
+  save(); renderEditor();
+}
+function saveAndBack(){ save(); currentId=null; goTab('visits'); toast('بازدید ذخیره شد'); }
+function getEditing(){ return state.visits.find(v=>v.id===editingVisitId); }
+
+/* photos */
+function addPhoto(){
+  const v=getEditing(); if(!v)return;
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.multiple=true;
+  inp.onchange=()=>{
+    const files=[...(inp.files||[])]; if(!files.length)return;
+    let left=files.length;
+    files.forEach(f=>{
+      const r=new FileReader();
+      r.onload=()=>{
+        const img=new Image();
+        img.onload=()=>{
+          const max=1280; let w=img.width,h=img.height;
+          if(w>max){ h=h*max/w; w=max; }
+          const cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+          cv.getContext('2d').drawImage(img,0,0,w,h);
+          v.photos=v.photos||[]; v.photos.push(cv.toDataURL('image/jpeg',0.72));
+          if(--left===0){ save(); renderEditorPhotos(v); }
+        };
+        img.src=r.result;
+      };
+      r.readAsDataURL(f);
+    });
+  };
+  inp.click();
+}
+function delPhoto(i){ const v=getEditing(); v.photos.splice(i,1); save(); renderEditorPhotos(v); }
+
+/* ---------- desktop keyboard ---------- */
+document.addEventListener('keydown',e=>{
+  if(!editingVisitId) return;
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(tag==='input'||tag==='textarea') return;
+  if(currentId===null){
+    if(e.key==='Escape'){ goTab('visits'); }
+    return;
+  }
+  if(/^[0-9]$/.test(e.key)){ kpKey(e.key); e.preventDefault(); }
+  else if(e.key==='.'){ kpKey('.'); e.preventDefault(); }
+  else if(e.key==='-'){ kpKey('-'); e.preventDefault(); }
+  else if(e.key==='Backspace'){ kpKey('<'); e.preventDefault(); }
+  else if(e.key==='Enter'){ kpDone(); e.preventDefault(); }
+  else if(e.key==='Escape'){ kpDone(); e.preventDefault(); }
+});
+
+/* =========================================================
+   EXCEL (SheetJS)
+   ========================================================= */
+function ensureXLSX(cb){
+  if(typeof XLSX!=='undefined'){ cb(); return; }
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+  s.onload=cb;
+  s.onerror=()=>toast('کتابخانه اکسل بارگذاری نشد (اتصال اینترنت لازم است)');
+  document.head.appendChild(s);
+}
+function importExcelUI(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.xlsx,.xls,.csv';
+  inp.onchange=()=>{
+    const f=inp.files&&inp.files[0]; if(!f)return;
+    ensureXLSX(()=>{
+      const r=new FileReader();
+      r.onload=()=>{
+        try{
+          const wb=XLSX.read(r.result,{type:'array'});
+          const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});
+          const items=[]; let started=false,id=0;
+          rows.forEach(row=>{
+            if(!row)return; const name=norm(row[0]); if(!name)return;
+            if(/سرفصل|عنوان/.test(name)){ started=true; return; }
+            if(!started)return;
+            id++;
+            const unit=norm(row[1]||'');
+            items.push({id,name,unit,unitCost:num(String(row[2]==null?'':row[2]).replace(/[^\d.\-]/g,''))});
+          });
+          if(!items.length){ toast('قلمی خوانده نشد'); return; }
+          state.items=items; save(); renderMain(); goTab('main');
+          toast(faDigits(items.length)+' قلم وارد شد');
+        }catch(e){ toast('خطا در خواندن اکسل: '+e.message); }
+      };
+      r.readAsArrayBuffer(f);
+    });
+  };
+  inp.click();
+}
+function exportMasterExcel(){
+  ensureXLSX(()=>{
+    const rows=[['سرفصل‌ها','واحد','هزینه واحد (تومان)']];
+    state.items.forEach(it=>rows.push([it.name,it.unit,it.unitCost]));
+    const ws=XLSX.utils.aoa_to_sheet(rows); const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Main');
+    XLSX.writeFile(wb,'شیت-اصلی-برآورد.xlsx');
+  });
+}
+function visitAoa(v){
+  const rows=[];
+  rows.push(['محل بازدید:',v.place||'']);
+  rows.push(['تاریخ بازدید:',v.date||'']);
+  rows.push(['بازدید دهنده:',v.inspector||'']);
+  rows.push([]);
+  rows.push(['سرفصل‌ها','مقدار','واحد','هزینه واحد (تومان)','مجموع']);
+  const first=6;
+  v.items.forEach(it=>rows.push([it.name,it.qty||0,it.unit,it.unitCost,null]));
+  const last=first+v.items.length-1;
+  v.items.forEach((it,i)=>{
+    const r=first+i;
+    rows[r-1][4]={f:'B'+r+'*D'+r};
+  });
+  rows.push([]);
+  const sumRow=last+2;
+  rows.push(['جمع',null,null,null,{f:'SUM(E'+first+':E'+last+')'}]);
+  rows.push(['مدیریت پیمان ('+v.feePercent+'٪)',null,null,null,{f:(v.feePercent/100)+'*E'+sumRow}]);
+  rows.push([]);
+  rows.push(['مجموع کل',null,null,null,{f:'E'+sumRow+'+E'+(sumRow+1)}]);
+  return {rows,sumRow};
+}
+function exportOneVisit(id){
+  const v=state.visits.find(x=>x.id===id); if(!v)return;
+  ensureXLSX(()=>{
+    const {rows}=visitAoa(v);
+    const ws=XLSX.utils.aoa_to_sheet(rows); ws['!cols']=[{wch:26},{wch:10},{wch:12},{wch:18},{wch:16}];
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'بازدید');
+    XLSX.writeFile(wb,'بازدید-'+(v.title||faDigits(v.id))+'.xlsx');
+    toast('اکسل بازدید ذخیره شد');
+  });
+}
+function exportAllVisitsExcel(){
+  if(!state.visits.length){ toast('بازدیدی وجود ندارد'); return; }
+  ensureXLSX(()=>{
+    const wb=XLSX.utils.book_new();
+    const m=[['سرفصل‌ها','واحد','هزینه واحد (تومان)']];
+    state.items.forEach(it=>m.push([it.name,it.unit,it.unitCost]));
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(m),'Main');
+    state.visits.forEach((v,i)=>{
+      const {rows}=visitAoa(v);
+      const name=(v.title||('بازدید-'+faDigits(v.id))).slice(0,28)+(i?'':'');
+      const ws=XLSX.utils.aoa_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb,ws,name);
+    });
+    XLSX.writeFile(wb,'برآوردکار-همه-بازدیدها.xlsx');
+    toast('فایل اکسل همه بازدیدها ذخیره شد');
+  });
+}
+
+/* =========================================================
+   BACKUP
+   ========================================================= */
+function exportBackup(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='برآوردکار-پشتیبان.json'; a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importBackupUI(){
+  const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
+  inp.onchange=()=>{
+    const f=inp.files&&inp.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{ try{
+      const d=JSON.parse(r.result);
+      if(!Array.isArray(d.items))throw new Error('invalid');
+      state.items=d.items; state.visits=d.visits||[]; if(d.feePercent)state.feePercent=d.feePercent;
+      save(); renderMain(); toast('بازیابی شد');
+    }catch(e){ toast('فایل معتبر نیست'); } };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+function wipeAll(){
+  if(!confirm('همه داده‌ها پاک شوند؟'))return;
+  localStorage.removeItem(STORE); state={items:[],visits:[],feePercent:15,od:{}};
+  load(); renderMain(); goTab('main'); toast('پاک شد');
+}
+
+/* =========================================================
+   SETTINGS + OneDrive (browser PKCE)
+   ========================================================= */
+function renderSettings(){
+  $('fee').value=state.feePercent||15;
+  $('od-client').value=(state.od&&state.od.clientId)||'';
+  $('od-log').textContent = state.od&&state.od.token ? 'وضعیت: متصل ✓' : 'وضعیت: بدون اتصال';
+  $('data-status').textContent='داده‌ها محلی ذخیره می‌شوند. برای همگام‌سازی با کامپیوتر، از OneDrive یا پشتیبان JSON استفاده کنید.';
+  paintInstall();
+}
+function saveParams(){ state.feePercent=num($('fee').value)||0; save(); toast('ذخیره شد'); }
+
+const OD_SCOPE='offline_access Files.ReadWrite.AppFolder';
+function b64url(bytes){ let s=''; bytes.forEach(b=>s+=String.fromCharCode(b)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function randVerifier(){ const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'; let t=''; for(let i=0;i<64;i++)t+=c[Math.floor(Math.random()*c.length)]; return t; }
+async function challengeFor(v){
+  if(window.crypto&&crypto.subtle){
+    const d=new TextEncoder().encode(v); const h=await crypto.subtle.digest('SHA-256',d);
+    return b64url(new Uint8Array(h));
+  }
+  return b64url(new TextEncoder().encode(v));
+}
+async function odLogin(){
+  const cid=($('od-client').value||'').trim();
+  if(!cid){ toast('Client ID را وارد کنید'); return; }
+  state.od=state.od||{}; state.od.clientId=cid; save();
+  const verifier=randVerifier(); sessionStorage.setItem('od_v',verifier);
+  const challenge=await challengeFor(verifier);
+  const redirect=location.origin+location.pathname;
+  const url='https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id='+encodeURIComponent(cid)+
+    '&response_type=code&redirect_uri='+encodeURIComponent(redirect)+
+    '&scope='+encodeURIComponent(OD_SCOPE)+'&code_challenge='+challenge+'&code_challenge_method=S256&response_mode=query';
+  location.href=url;
+}
+async function handleRedirect(){
+  const p=new URLSearchParams(location.search); const code=p.get('code');
+  if(!code)return;
+  const verifier=sessionStorage.getItem('od_v'); const cid=(state.od&&state.od.clientId)||'';
+  const redirect=location.origin+location.pathname;
+  try{
+    const body='client_id='+encodeURIComponent(cid)+'&scope='+encodeURIComponent(OD_SCOPE)+
+      '&grant_type=authorization_code&code='+encodeURIComponent(code)+
+      '&redirect_uri='+encodeURIComponent(redirect)+'&code_verifier='+encodeURIComponent(verifier);
+    const r=await fetch('https://login.microsoftonline.com/common/oauth2/v2.0/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+    const d=await r.json();
+    if(d.access_token){ state.od.token=d.access_token; state.od.exp=Date.now()+(d.expires_in||3600)*1000; save();
+      sessionStorage.removeItem('od_v'); history.replaceState(null,'',location.pathname); toast('اتصال به OneDrive برقرار شد'); renderSettings(); }
+    else toast('خطای ورود: '+(d.error_description||d.error||''));
+  }catch(e){ toast('خطا: '+e.message); }
+}
+function odToken(){ return state.od&&state.od.token&&state.od.exp>Date.now()?state.od.token:null; }
+async function odUploadAll(){
+  const t=odToken(); if(!t){ toast('ابتدا وصل شوید'); return; }
+  ensureXLSX(async()=>{
+    try{
+      const m=[['سرفصل‌ها','واحد','هزینه واحد (تومان)']];
+      state.items.forEach(it=>m.push([it.name,it.unit,it.unitCost]));
+      const wbM=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wbM,XLSX.utils.aoa_to_sheet(m),'Main');
+      const bin=XLSX.write(wbM,{bookType:'xlsx',type:'array'});
+      let r=await fetch('https://graph.microsoft.com/v1.0/me/drive/special/approot:/master.xlsx:/content',
+        {method:'PUT',headers:{Authorization:'Bearer '+t,'Content-Type':'application/octet-stream'},body:bin});
+      if(!r.ok)throw new Error('master '+r.status);
+      let n=0;
+      for(const v of state.visits){
+        const {rows}=visitAoa(v); const wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'بازدید');
+        const b=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+        const nm=encodeURIComponent((v.title||('visit-'+v.id))+'.xlsx');
+        const rr=await fetch('https://graph.microsoft.com/v1.0/me/drive/special/approot:/visits/'+nm+':/content',
+          {method:'PUT',headers:{Authorization:'Bearer '+t,'Content-Type':'application/octet-stream'},body:b});
+        if(rr.ok)n++;
+      }
+      toast('بارگذاری شد: شیت اصلی + '+faDigits(n)+' بازدید');
+    }catch(e){ toast('خطا: '+e.message); }
+  });
+}
+async function odDownloadMaster(){
+  const t=odToken(); if(!t){ toast('ابتدا وصل شوید'); return; }
+  try{
+    const r=await fetch('https://graph.microsoft.com/v1.0/me/drive/special/approot:/master.xlsx:/content',{headers:{Authorization:'Bearer '+t}});
+    if(!r.ok){ toast('فایلی روی OneDrive یافت نشد'); return; }
+    const buf=await r.arrayBuffer();
+    ensureXLSX(()=>{
+      const wb=XLSX.read(buf,{type:'array'});
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});
+      const items=[]; let started=false,id=0;
+      rows.forEach(row=>{ if(!row)return; const name=norm(row[0]); if(!name)return;
+        if(/سرفصل|عنوان/.test(name)){started=true;return;} if(!started)return; id++;
+        items.push({id,name,unit:norm(row[1]||''),unitCost:num(String(row[2]==null?'':row[2]).replace(/[^\d.\-]/g,''))}); });
+      if(!items.length){ toast('قلمی خوانده نشد'); return; }
+      state.items=items; save(); renderMain(); toast('شیت اصلی از OneDrive دریافت شد');
+    });
+  }catch(e){ toast('خطا: '+e.message); }
+}
+
+/* =========================================================
+   PWA install — نصب روی گوشی از طریق مرورگر
+   ========================================================= */
+const PHONE='09367343370';
+function isStandalone(){
+  return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+}
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent)||(/Macintosh/i.test(navigator.userAgent)&&'ontouchend' in document); }
+function isAndroid(){ return /android/i.test(navigator.userAgent); }
+function isServedSecurely(){ return location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'; }
+function guideHTML(){
+  if(isStandalone()) return 'برنامه در حالت <b>اپلیکیشن نصب‌شده</b> اجرا می‌شود و آیکون آن روی صفحهٔ گوشی/دسکتاپ موجود است.';
+  if(isIOS()) return '<b>راهنمای نصب روی iPhone / iPad (مرورگر Safari):</b><ol>'+
+      '<li>دکمهٔ <b>Share</b> (مربع با فلش رو به بالا، پایین صفحه) را بزنید.</li>'+
+      '<li>گزینهٔ <b>Add to Home Screen / افزودن به صفحهٔ اصلی</b> را انتخاب کنید.</li>'+
+      '<li>نام «برآوردکار» را تأیید کرده و <b>Add</b> را بزنید.</li></ol>'+
+      'نکته: در iOS فقط مرورگر <b>Safari</b> از نصب پشتیبانی می‌کند.';
+  if(isAndroid()) return '<b>راهنمای نصب روی اندروید (Chrome):</b><ol>'+
+      '<li>روی دکمهٔ «نصب / افزودن به صفحهٔ اصلی» بزنید؛ یا منوی ⋮ مرورگر را باز کنید.</li>'+
+      '<li>گزینهٔ <b>Install app / نصب برنامه</b> یا <b>Add to Home screen</b> را انتخاب کنید.</li>'+
+      '<li>تأیید کنید تا آیکون «برآوردکار» روی صفحهٔ گوشی ساخته شود.</li></ol>'+
+      'پس از نصب، برنامه مانند یک اپلیکیشن مستقل و حتی بدون اینترنت باز می‌شود.';
+  return '<b>راهنمای نصب:</b> این برنامه برای نصب کامل (PWA) باید از یک آدرس <b>https</b> (یا localhost) باز شود. فایل‌های «index.html»، «manifest.webmanifest»، «sw.js»، «icon-192.png»، «icon-512.png» و «apple-touch-icon.png» را در <b>یک پوشه کنار هم</b> روی هر فضای وب (مثلاً GitHub Pages) قرار دهید، سپس آن را در مرورگر گوشی باز کنید و از منو گزینهٔ <b>Install app / Add to Home screen</b> را بزنید.';
+}
+function paintInstall(){
+  const g=$('install-guide'); if(g) g.innerHTML=guideHTML();
+  const st=$('install-status'); if(st){
+    st.textContent = isStandalone() ? 'وضعیت: نصب‌شده — اجرای مستقل ✓'
+      : deferredPrompt ? 'وضعیت: آمادهٔ نصب — روی دکمهٔ بالا بزنید'
+      : 'وضعیت: نصب‌نشده';
+  }
+  const b=$('install-badge');
+  if(b) b.innerHTML = isStandalone() ? '<span class="badge-ok">✓ این برنامه روی این دستگاه نصب شده است</span>' : '';
+}
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('btn-install').style.display='inline-flex'; paintInstall(); });
+window.addEventListener('appinstalled',()=>{ deferredPrompt=null; toast('برنامه روی دستگاه نصب شد ✓'); paintInstall(); });
+async function installApp(){
+  if(isStandalone()){ toast('این برنامه از قبل نصب شده است ✓'); return; }
+  if(deferredPrompt){
+    try{
+      deferredPrompt.prompt();
+      const r=await deferredPrompt.userChoice;
+      deferredPrompt=null; paintInstall();
+      toast(r&&r.outcome==='accepted' ? 'در حال نصب برنامه…' : 'نصب لغو شد');
+    }catch(e){ toast('نصب خودکار در دسترس نیست — راهنمای نصب را ببینید'); goTab('settings'); paintInstall(); }
+    return;
+  }
+  goTab('settings'); paintInstall();
+  toast(isIOS() ? 'در سافاری: Share ← Add to Home Screen' : 'راهنمای نصب در بخش «نصب برنامه روی گوشی» نمایش داده شد');
+}
+function copyPhone(){
+  const done=()=>toast('شماره کپی شد: ۰۹۳۶۷۳۴۳۳۷۰');
+  const fb=()=>{ const ta=document.createElement('textarea'); ta.value=PHONE; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); done(); }catch(e){ toast('کپی نشد — شماره: ۰۹۳۶۷۳۴۳۳۷۰'); }
+    document.body.removeChild(ta); };
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(PHONE).then(done).catch(fb);
+  else fb();
+}
+if('serviceWorker' in navigator && isServedSecurely()){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
+}
+
+/* ---------- init ---------- */
+function init(){
+  load(); $('hdr-date').textContent=today(); handleRedirect(); renderMain(); paintInstall();
+  const qs=new URLSearchParams(location.search);
+  const tp=qs.get('tab');
+  if(tp&&['main','visits','settings'].includes(tp)){ hideSplash(); goTab(tp); }
+  else if(qs.get('code')){ hideSplash(); goTab('settings'); } /* بازگشت از ورود OneDrive */
+  /* در غیر این صورت صفحهٔ شروع (اسپلش) نمایش داده می‌شود */
+}
+window.addEventListener('resize',()=>{ if($('install-guide')) paintInstall(); });
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
